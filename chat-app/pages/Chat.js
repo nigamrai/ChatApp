@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux'; // Import useDispatch
 import Header from '../components/Header'; // Import Header component
-import axiosInstance from '../helpers/AxiosInstance';
+import axiosInstance from '../helpers/axiosInstance.js';
 import { clearUser } from '../redux/userSlice'; // Import logout action
 
 const Chat = () => {

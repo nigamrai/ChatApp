@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import axiosInstance from '../helpers/AxiosInstance';
+import axiosInstance from '../helpers/axiosInstance.js';
 import { setUser } from '../redux/userSlice';
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');

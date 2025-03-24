@@ -4,39 +4,25 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
   "dependencies": {
-<<<<<<< HEAD
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
-=======
-    "async": "^3.2.6",
->>>>>>> c6ed5226235092727c806916dfcb8dd41827a824
-    "body-parser": "^1.20.3",
     "cloudinary": "^2.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-<<<<<<< HEAD
-    "mongoose": "^8.12.1",
-    "multer": "^1.4.5-lts.2"
-=======
-<<<<<<< HEAD
     "mongoose": "^6.11.5",
-    "multer": "^1.4.5-lts.1"
-=======
-    "mongoose": "^8.12.1"
->>>>>>> c6ed5226235092727c806916dfcb8dd41827a824
->>>>>>> bf215b01321d16d288248b415bf77213c527f665
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.9"
+    "multer": "^1.4.5-lts.2"
   }
 }

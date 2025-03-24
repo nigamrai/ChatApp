@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import Header from '../components/Header'; // Import Header component
-import axiosInstance from '../helpers/AxiosInstance';
+import axiosInstance from '../helpers/axiosInstance.js';
 
 const FriendRequests = () => {
   const { data } = useSelector((auth) => auth.user); // Get user data from Redux
   const [requests, setRequests] = useState([]); // State to store friend requests
   const [acceptedRequests, setAcceptedRequests] = useState({}); // Track accepted friend requests
-console.log("User data: "+data._id);
+  console.log("User data: "+data._id);
+
   useEffect(() => {
     const fetchRequests = async () => {
+      if (!data) return; // Check if user is logged in
       try {
         const response = await axiosInstance.get(`/auth/friend-requests/${data._id}`);
         console.log(response.data); // Fetch friend requests from API
@@ -21,7 +23,7 @@ console.log("User data: "+data._id);
     };
 
     fetchRequests();
-  }, []);
+  }, [data]); // Add data as a dependency
 
   const acceptRequest = async (senderId) => {
     try {

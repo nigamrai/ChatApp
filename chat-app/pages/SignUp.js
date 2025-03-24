@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 import * as ImagePicker from 'expo-image-picker'; // Using Expo's ImagePicker
 import React, { useState } from 'react';
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import axiosInstance from '../helpers/AxiosInstance.js';
+import axiosInstance from '../helpers/axiosInstance.js';
 
 
 export default function SignUp({ navigation }) {
@@ -71,11 +71,7 @@ export default function SignUp({ navigation }) {
     try {
       const response = await axiosInstance.post('/auth/signup', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-      const response = await axiosInstance.post('/auth/signup', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
       });
-  
-      Alert.alert('Sign Up Successful', `Welcome, ${name.trim()}!`);
   
       Alert.alert('Sign Up Successful', `Welcome, ${name.trim()}!`);
       navigation.goBack();
@@ -147,9 +143,8 @@ export default function SignUp({ navigation }) {
       </TouchableOpacity>
     </View>
   );
-}
+}}}
 
-// Styles
 // Styles
 const styles = StyleSheet.create({
   container: {
@@ -224,4 +219,4 @@ const styles = StyleSheet.create({
     color: '#1E90FF',
     textDecorationLine: 'underline',
   },
-});
+})
