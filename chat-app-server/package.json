@@ -12,16 +12,24 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+<<<<<<< HEAD
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
+=======
+    "async": "^3.2.6",
+>>>>>>> c6ed5226235092727c806916dfcb8dd41827a824
     "body-parser": "^1.20.3",
     "cloudinary": "^2.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+<<<<<<< HEAD
     "mongoose": "^6.11.5",
     "multer": "^1.4.5-lts.1"
+=======
+    "mongoose": "^8.12.1"
+>>>>>>> c6ed5226235092727c806916dfcb8dd41827a824
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
