@@ -43,7 +43,7 @@ const Chat = () => {
     });
     setRequestStatus(requestStatusData);
   }, [users, data]);
-
+  console.log('data: '+data);
   const sendFriendRequest = async (friendId) => {
     try {
       console.log('Sending friend request to:', friendId); // Log friend ID
@@ -65,6 +65,7 @@ const Chat = () => {
   };
 
   const renderUserItem = ({ item }) => {
+    console.log('item:', item); // Log user item
     // Exclude the logged-in user from the list
     if (item.email === data.email) {
       console.log('Excluding user:', item._id); // Log excluded user

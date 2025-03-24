@@ -3,20 +3,22 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import FontAwesome
 import { useDispatch } from 'react-redux'; // Import useDispatch
-import { logoutUser } from '../redux/userSlice'; // Import logout action
+import { clearUser } from '../redux/userSlice'; // Import logout action
 
 const Header = ({ user }) => {
   const navigation = useNavigation(); // Initialize navigation
   const dispatch = useDispatch(); // Initialize dispatch for Redux
 
   const handleLogout = () => {
-    dispatch(logoutUser()); // Dispatch logout action
+    dispatch(clearUser()); // Dispatch logout action
     navigation.navigate('Login'); // Navigate to login screen
   };
 
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>Nep Chat</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Chat')}>
+        <Text style={styles.title}>Nep Chat</Text>
+      </TouchableOpacity>
       <View style={styles.icons}>
         <FontAwesome name="comment-o" size={24} color="black" style={styles.icon} />
         <TouchableOpacity onPress={() => navigation.navigate('FriendRequests', { user })}>
@@ -35,6 +37,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop:'30'
   },
   title: {
     fontSize: 24,
@@ -42,6 +45,7 @@ const styles = StyleSheet.create({
   },
   icons: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   icon: {
     marginLeft: 10,

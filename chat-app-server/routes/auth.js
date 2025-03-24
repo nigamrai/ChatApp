@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../models/User');
 const { isLoggedIn } = require('../middlewares/auth.middleware');
 
-
 const router = express.Router();
 const jwt = require('jsonwebtoken'); // Import JWT
 
@@ -11,10 +10,10 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user && user.password !== password) {
+    if (!user || user.password !== password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
- 
+
     // Generate JWT
     const token = jwt.sign({ id: user._id }, 'my_token_secret', { expiresIn: '1h' }); // Replace 'your_jwt_secret' with your actual secret
 
@@ -37,7 +36,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-router.get('/users', isLoggedIn,async (req, res) => {
+router.get('/users', isLoggedIn, async (req, res) => {
   try {
     const users = await User.find(); // Assuming you have a User model
     res.json(users);
@@ -73,64 +72,39 @@ router.post('/friend-request', isLoggedIn, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-// const acceptFriendRequest = async (req, res) => {
-//   const { requestId, senderId } = req.body;
-
-//   try {
-//     // Logic to accept the friend request
-//     const user = await User.findById(requestId);
-//     const sender = await User.findById(senderId);
-
-//     if (!user || !sender) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     // Add sender to user's friends list
-//     user.friends.push(senderId);
-//     await user.save();
-
-//     // Optionally, you can remove the request from the pending requests if you have that logic
-//     // ...
-
-//     return res.status(200).json({ message: 'Friend request accepted', friends: user.friends });
-//   } catch (error) {
-//     console.error('Error accepting friend request:', error);
-//     return res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
-
-// // Other routes...
-
-// router.post('/friend-request/accept', isLoggedIn, acceptFriendRequest);
-
 
 router.post("/friend-request/accept", isLoggedIn, async (req, res) => {
   try {
-    const { requestId, senderId} = req.body;
-   console.log(requestId);
-    console.log(senderId);
+    const { requestId, senderId } = req.body;
+
     // Retrieve the documents of sender and the recipient
-    const sender = await User.findById(senderId._id);
-    const recepient = await User.findById(requestId);
+    const sender = await User.findById(senderId);
+    const recipient = await User.findById(requestId);
+
+    if (!sender || !recipient) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update the friends list
     sender.friends.push(requestId);
-    recepient.friends.push(senderId);
-    recepient.requests = recepient.requests.filter((request) => {
-      if (request.from.toString() === senderId._id.toString()) {
+    recipient.friends.push(senderId);
+
+    // Update the request status to accepted
+    recipient.requests = recipient.requests.map((request) => {
+      if (request.from.toString() === senderId) {
         return { ...request, status: 'accepted' };
       }
       return request;
     });
 
-  
-    
     await sender.save();
-    await recepient.save();
+    await recipient.save();
 
-    const pendingRequests = recepient.requests.filter(request => request.status === 'pending');
+    const pendingRequests = recipient.requests.filter(request => request.status === 'pending');
     res.status(200).json({ message: "Friend Request accepted successfully", pendingRequests });
 
   } catch (error) {
-    console.log(error);
+    console.error('Error accepting friend request:', error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
@@ -138,10 +112,7 @@ router.post("/friend-request/accept", isLoggedIn, async (req, res) => {
 router.get('/friend-requests/:userId', isLoggedIn, async (req, res) => {
   try {
     const userId = req.params.userId;
-    const user = await User.findById(userId).populate({
-      path: 'requests.from',
-      match: { 'requests.status': 'pending' },
-    });
+    const user = await User.findById(userId).populate('requests.from');
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -149,7 +120,6 @@ router.get('/friend-requests/:userId', isLoggedIn, async (req, res) => {
 
     // Filter the requests to only include those with a status of 'pending'
     const pendingRequests = user.requests.filter(request => request.status === 'pending');
-
     res.status(200).json(pendingRequests);
   } catch (error) {
     console.error('Error fetching friend requests:', error);
