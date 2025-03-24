@@ -23,7 +23,7 @@ const FriendRequests = () => {
     };
 
     fetchRequests();
-  }, [data]); // Add data as a dependency
+  }, []); // Add data as a dependency
 
   const acceptRequest = async (senderId) => {
     try {
