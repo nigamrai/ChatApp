@@ -1,35 +1,39 @@
-// Login.js
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
+import { useDispatch } from 'react-redux';
+import axiosInstance from '../helpers/AxiosInstance';
+import { setUser } from '../redux/userSlice';
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const dispatch=useDispatch();
   // Function to handle the login action
-const handleLogin = async () => {
+  const handleLogin = async () => {
     if (email === '' || password === '') {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
 
     try {
-      const response = await axios.post('http://10.10.10.16:5000/api/auth/login', {
+      const response = await axiosInstance.post('/auth/login', {
         email,
         password,
       });
-      console.log(response);
+      console.log(response.data.token);
+      // Store the session token
+      await AsyncStorage.setItem('session_token', response.data.token);
+      dispatch(setUser({ user: response.data.user }));
       Alert.alert('Login Successful', `Welcome ${email}!`);
+      navigation.navigate('Chat'); // Navigate to Chat screen
+    
     } catch (error) {
       console.log(error);
       const errorMessage = error.response ? error.response.data.error : 'An error occurred. Please try again.';
       Alert.alert('Error', errorMessage);
     }
   };
-
-
 
   return (
     <View style={styles.container}>
