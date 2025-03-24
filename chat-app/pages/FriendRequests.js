@@ -8,7 +8,7 @@ const FriendRequests = () => {
   const { data } = useSelector((auth) => auth.user); // Get user data from Redux
   const [requests, setRequests] = useState([]); // State to store friend requests
   const [acceptedRequests, setAcceptedRequests] = useState({}); // Track accepted friend requests
-
+console.log("User data: "+data._id);
   useEffect(() => {
     const fetchRequests = async () => {
       try {
@@ -21,7 +21,7 @@ const FriendRequests = () => {
     };
 
     fetchRequests();
-  }, [data._id]);
+  }, []);
 
   const acceptRequest = async (senderId) => {
     try {

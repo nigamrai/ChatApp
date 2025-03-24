@@ -21,7 +21,7 @@ const Header = ({ user }) => {
       </TouchableOpacity>
       <View style={styles.icons}>
         <FontAwesome name="comment-o" size={24} color="black" style={styles.icon} />
-        <TouchableOpacity onPress={() => navigation.navigate('FriendRequests', { user })}>
+        <TouchableOpacity onPress={() => navigation.navigate('FriendRequests')}>
           <FontAwesome name="users" size={24} color="black" style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>

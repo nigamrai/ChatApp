@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
-
+const cloudinary = require('cloudinary');
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+cloudinary.config({ 
+  cloud_name: 'dacafjeag', 
+        api_key: '574477448174444',  
+  api_secret: 'yngLYLzcTwiXqVirsqR0rBKr-GM'
+});
 // Middleware
 app.use(cors({
   origin: '*', // Allow requests from any origin for testing

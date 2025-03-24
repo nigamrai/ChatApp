@@ -14,6 +14,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image:{
+    public_id:{
+      type:String,
+    },
+    secure_url:{
+      type:String,
+  }},
   requests: [
     {
       from: {

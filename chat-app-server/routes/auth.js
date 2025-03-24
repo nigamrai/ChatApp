@@ -1,10 +1,10 @@
 const express = require('express');
 const User = require('../models/User');
 const { isLoggedIn } = require('../middlewares/auth.middleware');
-
+const upload=require('../uploads/upload');
 const router = express.Router();
 const jwt = require('jsonwebtoken'); // Import JWT
-
+const cloudinary = require('cloudinary').v2;
 // Existing login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -25,14 +25,61 @@ router.post('/login', async (req, res) => {
 });
 
 // Signup route
-router.post('/signup', async (req, res) => {
+router.post('/signup', upload.single('image'), async (req, res) => {
   const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Please fill in all fields and upload an image.' });
+  }
+
   try {
-    const newUser = new User({ name, email, password });
-    await newUser.save();
+    // Check if user exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Hash password
+    // const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      name,
+      email,
+      password,
+      image: {
+        public_id: '',
+        secure_url: '',
+      },
+    });
+    console.log("File details:" +req.file.path);
+    if (req.file) {
+      try {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: 'Chatapp',
+          width: 250,
+          height: 250,
+          gravity: 'faces',
+          crop: 'fill',
+        });
+        console.log("Result:"+result.secure_url);
+        if (result) {
+          user.image.public_id = result.public_id;
+          user.image.secure_url = result.secure_url;
+          // Remove file from server
+        //  await fs.unlink(req.file.path)
+        }
+        console.log(user);
+      } catch (e) {
+        return res.status(500).json({ error: e.message });
+      }
+    }
+
+    await user.save();
+    user.password = undefined;
+
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
-    res.status(400).json({ error: 'Error creating user' });
+    return res.status(500).json({ error: 'Error creating user' });
   }
 });
 
