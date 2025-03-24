@@ -3,19 +3,30 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
+const dotenv = require('dotenv');
+const cloudinary=require('cloudinary'); 
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors({
-  origin: '*', // Allow requests from any origin for testing
-}));
 
+cloudinary.config({ 
+  cloud_name: 'dacafjeag', 
+        api_key: '574477448174444',  
+  api_secret: 'yngLYLzcTwiXqVirsqR0rBKr-GM'
+});
+
+
+// Middleware
+app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongodb.net/chat-app', {
+const mongoURI = 'mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongodb.net/chat-app';
+
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -24,6 +35,7 @@ mongoose.connect('mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongo
 
 // Routes
 app.use('/api/auth', authRoutes);
+
 
 // Start the server
 app.listen(PORT, () => {

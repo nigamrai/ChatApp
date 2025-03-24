@@ -14,6 +14,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  image: {
+    public_id:{
+      type:String
+    },
+    secure_url:{
+      type:String
+    } // Store the filename instead of the actual image
+  },
 });
 
 module.exports = mongoose.model('User', userSchema);
