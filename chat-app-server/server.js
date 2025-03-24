@@ -16,10 +16,13 @@ app.use(cors({
   origin: '*', // Allow requests from any origin for testing
 }));
 
+
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongodb.net/chat-app', {
+const mongoURI = 'mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongodb.net/chat-app';
+
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -28,6 +31,7 @@ mongoose.connect('mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongo
 
 // Routes
 app.use('/api/auth', authRoutes);
+
 
 // Start the server
 app.listen(PORT, () => {
