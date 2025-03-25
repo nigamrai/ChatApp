@@ -22,7 +22,6 @@ const Chat = () => {
           isFriend: data.friends.includes(userItem._id), // Check if the user is a friend
         }));
         setUsers(usersWithFriendStatus); // Set users with friend status in state
-
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -43,10 +42,9 @@ const Chat = () => {
     });
     setRequestStatus(requestStatusData);
   }, [users, data]);
-  console.log('data: '+data);
+
   const sendFriendRequest = async (friendId) => {
     try {
-      console.log('Sending friend request to:', friendId); // Log friend ID
       const response = await axiosInstance.post('/auth/friend-request', {
         from: data._id,
         to: friendId,
@@ -65,15 +63,12 @@ const Chat = () => {
   };
 
   const renderUserItem = ({ item }) => {
-    console.log('item:', item); // Log user item
-    // Exclude the logged-in user from the list
     if (item.email === data.email) {
-      console.log('Excluding user:', item._id); // Log excluded user
-      return null;
+      return null; // Exclude logged-in user from the list
     }
     return (
       <View style={styles.userItem} key={item.id ? item.id : item.email}>
-        <Image source={{ uri: item.profilePic }} style={styles.profilePic} />
+        <Image source={{ uri: item.image.secure_url }} style={styles.profilePic} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{item.name}</Text>
           <Text style={styles.userEmail}>{item.email}</Text>
@@ -82,7 +77,7 @@ const Chat = () => {
           style={[styles.button, item.isFriend ? styles.friendButton : requestStatus[item._id] ? styles.requestSentButton : styles.addButton]}
           onPress={requestStatus[item._id] || item.isFriend ? null : () => sendFriendRequest(item._id)} // Disable onPress if request is sent or already friends
         >
-          <Text style={styles.buttonText}>
+          <Text style={[styles.buttonText, item.isFriend ? styles.friendButtonText : null]}>
             {item.isFriend ? 'Friends' : requestStatus[item._id] || 'Add Friend'}
           </Text>
         </TouchableOpacity>
@@ -93,7 +88,6 @@ const Chat = () => {
   return (
     <View style={styles.container}>
       <Header user={data} />
-
       <View style={styles.welcomeSection}>
         <Image source={{ uri: data.profilePic }} style={styles.profilePic} />
         <Text style={styles.welcomeText}>Welcome, {data.name}!</Text>
@@ -102,7 +96,7 @@ const Chat = () => {
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
       <Text style={styles.sectionTitle}>Users on Nep Chat</Text>
-      <FlatList 
+      <FlatList
         data={users.filter(userItem => userItem.email !== data.email)} // Ensure logged-in user is filtered out
         renderItem={renderUserItem}
         keyExtractor={item => item._id ? item._id.toString() : item.email} // Fallback to email if id is undefined
@@ -117,21 +111,6 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 40,
     backgroundColor: '#f7f7f7',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  icons: {
-    flexDirection: 'row',
-  },
-  icon: {
-    marginLeft: 10,
   },
   welcomeSection: {
     flexDirection: 'row',
@@ -183,8 +162,14 @@ const styles = StyleSheet.create({
   friendButton: {
     backgroundColor: 'blue',
   },
+  friendButtonText: {
+    color: 'white', // Set text color to white for the "Friends" button
+  },
+  buttonText: {
+    color: 'black', // Default text color
+  },
   logoutButton: {
-    backgroundColor: '#f44336', // Red color for logout button
+    backgroundColor: '#f44336',
     padding: 10,
     borderRadius: 5,
     marginTop: 10,

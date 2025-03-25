@@ -157,6 +157,37 @@ router.post("/friend-request/accept", isLoggedIn, async (req, res) => {
   }
 });
 
+
+// Reject a friend request
+router.delete("/friend-request/reject", isLoggedIn, async (req, res) => {
+  try {
+    const { requestId, senderId } = req.body;
+    if (!requestId || !senderId) {
+      return res.status(400).json({ message: "Both requestId and senderId are required" });
+    }
+    const sender = await User.findById(senderId);
+    const recipient = await User.findById(requestId);
+
+    if (!sender || !recipient) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    recipient.requests = recipient.requests.filter(
+      (request) => request.from.toString() !== senderId
+    );
+    await recipient.save();
+    res.status(200).json({ message: "Friend Request rejected successfully" });
+  } catch (error) {
+    console.error('Error rejecting friend request:', error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+module.exports = router;
+
+
+
+
 router.get('/friend-requests/:userId', isLoggedIn, async (req, res) => {
   try {
     const userId = req.params.userId;

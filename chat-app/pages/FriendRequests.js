@@ -1,68 +1,103 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import Header from '../components/Header'; // Import Header component
+import Header from '../components/Header';
 import axiosInstance from '../helpers/axiosInstance.js';
 
 const FriendRequests = () => {
-  const { data } = useSelector((auth) => auth.user); // Get user data from Redux
-  const [requests, setRequests] = useState([]); // State to store friend requests
-  const [acceptedRequests, setAcceptedRequests] = useState({}); // Track accepted friend requests
-  console.log("User data: "+data._id);
+  const { data } = useSelector((auth) => auth.user); // User data from Redux
+  const [requests, setRequests] = useState([]); // Friend requests list
+  const [acceptedRequests, setAcceptedRequests] = useState({}); // Accepted requests state
+  const [rejectedRequests, setRejectedRequests] = useState({}); // Rejected requests state
 
+  // Fetch friend requests
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!data) return; // Check if user is logged in
+      if (!data) return;
       try {
         const response = await axiosInstance.get(`/auth/friend-requests/${data._id}`);
-        console.log(response.data); // Fetch friend requests from API
-        setRequests(response.data); // Set requests in state
+        setRequests(response.data);
       } catch (error) {
-        console.error('Error fetching friend requests:', error);
+        console.error('Error fetching friend requests:', error.response?.data || error.message);
       }
     };
 
     fetchRequests();
-  }, []); // Add data as a dependency
+  }, [data]);
 
+  // Accept friend request
   const acceptRequest = async (senderId) => {
     try {
-      console.log("User data"+data._id)
-      console.log("Sender data"+senderId)
-      const response = await axiosInstance.post(`/auth/friend-request/accept`, { requestId:data._id, senderId }); // Accept friend request
+      const response = await axiosInstance.post(`/auth/friend-request/accept`, {
+        requestId: data._id, // The recipient's ID
+        senderId, // The sender's ID
+      });
+
       if (response.status === 200) {
         setAcceptedRequests((prev) => ({ ...prev, [senderId]: true }));
-        setRequests((prev) => prev.filter((request) => request._id !== senderId)); // Remove accepted request from state
+        setRequests((prev) => prev.filter((request) => request.from._id !== senderId));
       }
     } catch (error) {
-      console.error('Error accepting friend request:', error);
+      console.error('Error accepting friend request:', error.response?.data || error.message);
     }
   };
 
+  // Reject friend request
+  const rejectRequest = async (senderId) => {
+    try {
+      const response = await axiosInstance.delete(`/auth/friend-request/reject`, {
+        data: {
+          requestId: data._id, // The recipient's ID
+          senderId, // The sender's ID
+        },
+      });
+
+      if (response.status === 200) {
+        setRejectedRequests((prev) => ({ ...prev, [senderId]: true }));
+        setRequests((prev) => prev.filter((request) => request.from._id !== senderId));
+      }
+    } catch (error) {
+      console.error('Error rejecting friend request:', error.response?.data || error.message);
+    }
+  };
+
+  // Render each friend request
   const renderRequestItem = ({ item }) => (
     <View style={styles.requestItem}>
+       <Image
+        source={{ uri: item.from.image?.secure_url }} // Directly use the image URL if available
+        style={styles.profilePic}
+      />
       <View style={styles.userInfo}>
         <Text style={styles.requestText}>{item.from.name}</Text>
         <Text style={styles.requestEmail}>{item.from.email}</Text>
       </View>
-      <TouchableOpacity
-        onPress={acceptedRequests[item.from._id] ? null : () => acceptRequest(item.from._id)}
-        style={[
-          styles.acceptButton,
-          acceptedRequests[item.from._id] && styles.acceptedButton,
-        ]}
-      >
-        <Text style={styles.acceptButtonText}>
-          {acceptedRequests[item.from._id] ? 'Friends' : 'Accept'}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={acceptedRequests[item.from._id] ? null : () => acceptRequest(item.from._id)}
+          style={[styles.acceptButton, acceptedRequests[item.from._id] && styles.acceptedButton]}
+        >
+          <Text style={styles.acceptButtonText}>
+            {acceptedRequests[item.from._id] ? 'Friends' : 'Accept'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={rejectedRequests[item.from._id] ? null : () => rejectRequest(item.from._id)}
+          style={[styles.rejectButton, rejectedRequests[item.from._id] && styles.rejectedButton]}
+        >
+          <Text style={styles.rejectButtonText}>
+            {rejectedRequests[item.from._id] ? 'Rejected' : 'Reject'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Header user={data} /> 
+        <Header user={data} />
       </View>
       <Text style={styles.title}>Friend Requests</Text>
       <FlatList
@@ -81,7 +116,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f7f7f7',
   },
   headerContainer: {
-    // Add necessary styling to maintain layout
     marginBottom: 20,
   },
   title: {
@@ -108,6 +142,16 @@ const styles = StyleSheet.create({
   requestEmail: {
     color: '#666',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 5,
+  },
+  profilePic: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
   acceptButton: {
     backgroundColor: '#4CAF50',
     padding: 5,
@@ -117,6 +161,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
   },
   acceptButtonText: {
+    color: '#fff',
+  },
+  rejectButton: {
+    backgroundColor: '#D32F2F',
+    padding: 5,
+    borderRadius: 5,
+  },
+  rejectedButton: {
+    backgroundColor: 'gray',
+  },
+  rejectButtonText: {
     color: '#fff',
   },
 });
