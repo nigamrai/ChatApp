@@ -18,6 +18,7 @@ app.use(cors({
 
 
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Connect to MongoDB
 const mongoURI = 'mongodb+srv://khanalbk18:TMWHlbtPsx7caK6Z@cluster0.fnhsl.mongodb.net/chat-app';
