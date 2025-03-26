@@ -20,7 +20,10 @@ const Header = ({ user }) => {
         <Text style={styles.title}>Nep Chat</Text>
       </TouchableOpacity>
       <View style={styles.icons}>
-        <FontAwesome name="comment-o" size={24} color="black" style={styles.icon} />
+        {/* <FontAwesome name="comment-o" size={24} color="black" style={styles.icon} /> */}
+        <TouchableOpacity onPress={() => navigation.navigate('Message')}>
+          <FontAwesome name="comment-o" size={24} color="black" style={styles.icon} />
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('FriendRequests')}>
           <FontAwesome name="users" size={24} color="black" style={styles.icon} />
         </TouchableOpacity>

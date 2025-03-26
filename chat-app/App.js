@@ -8,6 +8,7 @@ import FriendRequests from './pages/FriendRequests';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp.js';
 import store from './redux/store';
+import Message from './pages/Message.js';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ function App() {
           component={SignUp}
           options={{ title: 'Sign Up' }}
         />
+
         <Stack.Screen
           name="FriendRequests"
           options={{ title: 'Friend Requests', headerShown: false }}
@@ -32,6 +34,17 @@ function App() {
           {() => (
             <RequireAuth>
               <FriendRequests />
+            </RequireAuth>
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen
+          name="Message"
+          options={{ title: 'Message', headerShown: false }}
+        >
+          {() => (
+            <RequireAuth>
+              <Message />
             </RequireAuth>
           )}
         </Stack.Screen>
