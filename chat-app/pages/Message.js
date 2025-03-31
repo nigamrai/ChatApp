@@ -45,7 +45,7 @@ const Message = () => {
     <View style={styles.container}>
       <Header user={data} />
       <View style={styles.welcomeSection}>
-        <Image source={{ uri: data.profilePic }} style={styles.profilePic} />
+        <Image source={{ uri: data?.image?.secure_url }} style={styles.profilePic} />
         <Text style={styles.welcomeText}>Welcome, {data.name}!</Text>
       </View>
       <Text style={styles.sectionTitle}>Your Friends</Text>
