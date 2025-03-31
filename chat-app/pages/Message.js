@@ -1,10 +1,10 @@
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux'; 
-import Header from '../components/Header'; 
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import Header from '../components/Header';
 import axiosInstance from '../helpers/axiosInstance.js';
-import { clearUser } from '../redux/userSlice'; 
+import { clearUser } from '../redux/userSlice';
 
 const Message = () => {
   const { data } = useSelector((auth) => auth.user); 
@@ -48,9 +48,6 @@ const Message = () => {
         <Image source={{ uri: data.profilePic }} style={styles.profilePic} />
         <Text style={styles.welcomeText}>Welcome, {data.name}!</Text>
       </View>
-      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
       <Text style={styles.sectionTitle}>Your Friends</Text>
       <FlatList
         data={users} // Only friends are displayed

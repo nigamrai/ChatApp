@@ -92,9 +92,6 @@ const Chat = () => {
         <Image source={{ uri: data.profilePic }} style={styles.profilePic} />
         <Text style={styles.welcomeText}>Welcome, {data.name}!</Text>
       </View>
-      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
       <Text style={styles.sectionTitle}>Users on Nep Chat</Text>
       <FlatList
         data={users.filter(userItem => userItem.email !== data.email)} // Ensure logged-in user is filtered out

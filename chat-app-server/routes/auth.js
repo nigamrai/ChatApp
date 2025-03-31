@@ -16,7 +16,7 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, 'my_token_secret', { expiresIn: '1h' }); // Replace 'your_jwt_secret' with your actual secret
-
+    console.log("Logged In")
     res.status(200).json({ token, user });
   } catch (error) {
     console.error('Error during login:', error);
@@ -79,7 +79,6 @@ router.post('/signup', upload.single('image'), async (req, res) => {
 
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
-    return res.status(500).json({ error: 'Error creating user' });
     return res.status(500).json({ error: 'Error creating user' });
   }
 });
