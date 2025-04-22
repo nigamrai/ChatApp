@@ -16,7 +16,6 @@ router.post('/login', async (req, res) => {
 
     // Generate JWT
     const token = jwt.sign({ id: user._id }, 'my_token_secret', { expiresIn: '1h' }); // Replace 'your_jwt_secret' with your actual secret
-    console.log("Logged In")
     res.status(200).json({ token, user });
   } catch (error) {
     console.error('Error during login:', error);
@@ -51,7 +50,6 @@ router.post('/signup', upload.single('image'), async (req, res) => {
         secure_url: '',
       },
     });
-    console.log("File details:" +req.file.path);
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -61,14 +59,12 @@ router.post('/signup', upload.single('image'), async (req, res) => {
           gravity: 'faces',
           crop: 'fill',
         });
-        console.log("Result:"+result.secure_url);
         if (result) {
           user.image.public_id = result.public_id;
           user.image.secure_url = result.secure_url;
           // Remove file from server
         //  await fs.unlink(req.file.path)
         }
-        console.log(user);
       } catch (e) {
         return res.status(500).json({ error: e.message });
       }

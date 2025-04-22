@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Header from '../components/Header';
 import axiosInstance from '../helpers/axiosInstance.js';
@@ -16,7 +16,7 @@ const Message = () => {
     const fetchUsers = async () => {
       try {
         const response = await axiosInstance.get('/auth/users'); 
-        const friendsList = response.data.filter(userItem => data.friends.includes(userItem._id)); // Filter only friends
+        const friendsList = response?.data?.filter(userItem => data?.friends?.includes(userItem._id)); // Filter only friends
         setUsers(friendsList); 
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -31,15 +31,21 @@ const Message = () => {
     navigation.navigate('Login'); 
   };
 
-  const renderUserItem = ({ item }) => (
-    <View style={styles.userItem} key={item._id}>
-      <Image source={{ uri: item.image.secure_url }} style={styles.profilePic} />
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item.name}</Text>
-        {/* <Text style={styles.userEmail}>{item.email}</Text> */}
-      </View>
-    </View>
-  );
+  const renderUserItem = ({ item }) => {
+    const handlePress = () => {
+      navigation.navigate('Chatting', { friend: item }); // Navigate to Chatting.js with friend data
+    };
+
+    return (
+      <TouchableOpacity style={styles.userItem} key={item._id} onPress={handlePress}>
+        <Image source={{ uri: item.image.secure_url }} style={styles.profilePic} />
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{item.name}</Text>
+          {/* <Text style={styles.userEmail}>{item.email}</Text> */}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    marginTop: 40,
+    marginTop: 10,
     backgroundColor: '#f7f7f7',
   },
   welcomeSection: {

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
-
+import {BACKEND_URL} from "@env";
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../helpers/axiosInstance.js';
@@ -8,6 +8,7 @@ import { setUser } from '../redux/userSlice';
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
   const dispatch=useDispatch();
   // Function to handle the login action
   const handleLogin = async () => {
@@ -15,7 +16,7 @@ export default function Login({ navigation }) {
       Alert.alert('Error', 'Please fill in both fields.');
       return;
     }
-
+    console.log("Axios Instance",axiosInstance);
     try {
       const response = await axiosInstance.post('/auth/login', {
         email,
