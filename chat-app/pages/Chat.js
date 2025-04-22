@@ -42,7 +42,7 @@ const Chat = () => {
     });
     setRequestStatus(requestStatusData);
   }, [users, data]);
-
+  console.log(data);
   const sendFriendRequest = async (friendId) => {
     try {
       const response = await axiosInstance.post('/auth/friend-request', {
@@ -89,12 +89,9 @@ const Chat = () => {
     <View style={styles.container}>
       <Header user={data} />
       <View style={styles.welcomeSection}>
-        <Image source={{ uri: data.profilePic }} style={styles.profilePic} />
+        <Image source={{ uri: data?.image?.secure_url }} style={styles.profilePic} />
         <Text style={styles.welcomeText}>Welcome, {data.name}!</Text>
       </View>
-      <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
       <Text style={styles.sectionTitle}>Users on Nep Chat</Text>
       <FlatList
         data={users.filter(userItem => userItem.email !== data.email)} // Ensure logged-in user is filtered out

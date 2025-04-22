@@ -4,11 +4,13 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import RequireAuth from './components/Auth/requireAuth.js';
 import Chat from './pages/Chat';
+import Chatting from './pages/Chatting.js';
 import FriendRequests from './pages/FriendRequests';
 import Login from './pages/Login';
+import Message from './pages/Message.js';
 import SignUp from './pages/SignUp.js';
 import store from './redux/store';
-import Message from './pages/Message.js';
+import CallScreen from './pages/CallScreen.js';
 
 const Stack = createStackNavigator();
 
@@ -55,6 +57,26 @@ function App() {
           {() => (
             <RequireAuth>
               <Chat />
+            </RequireAuth>
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Chatting"
+          options={{ title: 'Chatting', headerShown: false }}
+        >
+          {() => (
+            <RequireAuth>
+              <Chatting />
+            </RequireAuth>
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="CallScreen"
+          options={{ title: 'Call Screen', headerShown: false }}
+        >
+          {props => (
+            <RequireAuth>
+              <CallScreen {...props} />
             </RequireAuth>
           )}
         </Stack.Screen>
