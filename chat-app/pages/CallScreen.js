@@ -46,7 +46,7 @@ const CallScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const res = await fetch(`http://192.168.121.46:5000/video/token?channel=${roomId}`);
+        const res = await fetch(`http://10.10.10.113:5000/video/token?channel=${roomId}`);
         const data = await res.json();
         setToken(data.token);
         console.log('Fetched Agora token:', data.token);

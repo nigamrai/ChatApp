@@ -201,4 +201,19 @@ router.get('/friend-requests/:userId', isLoggedIn, async (req, res) => {
   }
 });
 
+// Cancel friend request
+router.post('/cancel-request', isLoggedIn, async (req, res) => {
+  const { from, to } = req.body;
+  try {
+    const recipient = await User.findById(to);
+    if (!recipient) return res.status(404).send('User not found');
+
+    recipient.requests = recipient.requests.filter(request => request.from.toString() !== from);
+    await recipient.save();
+    res.status(200).send('Request cancelled');
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;
