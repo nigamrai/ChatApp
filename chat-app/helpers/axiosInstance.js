@@ -3,7 +3,7 @@ import axios from 'axios';
 import {BACKEND_URL} from '@env';
 // Replace <your-computer-ip> with your actual IP address
 const BASE_URL = BACKEND_URL;
-console.log("BASE URL",BASE_URL)
+console.log("BASE URL 2",BASE_URL)
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,

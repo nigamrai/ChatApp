@@ -1,27 +1,27 @@
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux'; // Import useDispatch
-import Header from '../components/Header'; // Import Header component
+import { useDispatch, useSelector } from 'react-redux';
+import Header from '../components/Header';
 import axiosInstance from '../helpers/axiosInstance.js';
-import { clearUser } from '../redux/userSlice'; // Import logout action
+import { clearUser } from '../redux/userSlice';
 
 const Chat = () => {
-  const { data } = useSelector((auth) => auth.user); // Get user data from Redux
-  const [users, setUsers] = useState([]); // State to store users
-  const [requestStatus, setRequestStatus] = useState({}); // Track request status for each user
-  const navigation = useNavigation(); // Initialize navigation
-  const dispatch = useDispatch(); // Initialize dispatch for Redux
+  const { data } = useSelector((auth) => auth.user);
+  const [users, setUsers] = useState([]);
+  const [requestStatus, setRequestStatus] = useState({});
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axiosInstance.get('/auth/users'); // Fetch users from API
+        const response = await axiosInstance.get('/auth/users');
         const usersWithFriendStatus = response.data.map(userItem => ({
           ...userItem,
-          isFriend: data.friends.includes(userItem._id), // Check if the user is a friend
+          isFriend: data.friends.includes(userItem._id),
         }));
-        setUsers(usersWithFriendStatus); // Set users with friend status in state
+        setUsers(usersWithFriendStatus);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -31,7 +31,6 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    // Set the request status for each user
     const requestStatusData = {};
     users.forEach(userItem => {
       userItem.requests.forEach(request => {
@@ -42,7 +41,7 @@ const Chat = () => {
     });
     setRequestStatus(requestStatusData);
   }, [users, data]);
-  console.log(data);
+
   const sendFriendRequest = async (friendId) => {
     try {
       const response = await axiosInstance.post('/auth/friend-request', {
@@ -57,30 +56,60 @@ const Chat = () => {
     }
   };
 
+  const cancelFriendRequest = async (friendId) => {
+    try {
+      const response = await axiosInstance.post('/auth/cancel-request', {
+        from: data._id,
+        to: friendId,
+      });
+      if (response.status === 200) {
+        setRequestStatus((prev) => {
+          const newStatus = { ...prev };
+          delete newStatus[friendId];
+          return newStatus;
+        });
+      }
+    } catch (error) {
+      console.error('Error canceling friend request:', error);
+    }
+  };
+
   const handleLogout = () => {
-    dispatch(clearUser); // Dispatch logout action
-    navigation.navigate('Login'); // Navigate to login screen
+    dispatch(clearUser());
+    navigation.navigate('Login');
   };
 
   const renderUserItem = ({ item }) => {
-    if (item.email === data.email) {
-      return null; // Exclude logged-in user from the list
-    }
+    if (item.email === data.email) return null;
+
+    const isRequestSent = requestStatus[item._id] === 'Request Sent';
+
     return (
-      <View style={styles.userItem} key={item.id ? item.id : item.email}>
+      <View style={styles.userItem} key={item._id}>
         <Image source={{ uri: item.image.secure_url }} style={styles.profilePic} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{item.name}</Text>
           <Text style={styles.userEmail}>{item.email}</Text>
         </View>
-        <TouchableOpacity
-          style={[styles.button, item.isFriend ? styles.friendButton : requestStatus[item._id] ? styles.requestSentButton : styles.addButton]}
-          onPress={requestStatus[item._id] || item.isFriend ? null : () => sendFriendRequest(item._id)} // Disable onPress if request is sent or already friends
-        >
-          <Text style={[styles.buttonText, item.isFriend ? styles.friendButtonText : null]}>
-            {item.isFriend ? 'Friends' : requestStatus[item._id] || 'Add Friend'}
-          </Text>
-        </TouchableOpacity>
+
+        {item.isFriend ? (
+          <TouchableOpacity style={[styles.button, styles.friendButton]} disabled>
+            <Text style={[styles.buttonText, styles.friendButtonText]}>Friends</Text>
+          </TouchableOpacity>
+        ) : isRequestSent ? (
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity style={[styles.button, styles.requestSentButton]} disabled>
+              <Text style={styles.buttonText}>Request Sent</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => cancelFriendRequest(item._id)}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={[styles.button, styles.addButton]} onPress={() => sendFriendRequest(item._id)}>
+            <Text style={styles.buttonText}>Add Friend</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -94,9 +123,9 @@ const Chat = () => {
       </View>
       <Text style={styles.sectionTitle}>Users on Nep Chat</Text>
       <FlatList
-        data={users.filter(userItem => userItem.email !== data.email)} // Ensure logged-in user is filtered out
+        data={users.filter(userItem => userItem.email !== data.email)}
         renderItem={renderUserItem}
-        keyExtractor={item => item._id ? item._id.toString() : item.email} // Fallback to email if id is undefined
+        keyExtractor={item => item._id || item.email}
       />
     </View>
   );
@@ -146,9 +175,14 @@ const styles = StyleSheet.create({
   userEmail: {
     color: '#666',
   },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: 5,
+  },
   button: {
     padding: 5,
     borderRadius: 5,
+    marginHorizontal: 2,
   },
   addButton: {
     backgroundColor: '#4CAF50',
@@ -159,21 +193,14 @@ const styles = StyleSheet.create({
   friendButton: {
     backgroundColor: 'blue',
   },
+  cancelButton: {
+    backgroundColor: '#f44336',
+  },
   friendButtonText: {
-    color: 'white', // Set text color to white for the "Friends" button
+    color: 'white',
   },
   buttonText: {
-    color: 'black', // Default text color
-  },
-  logoutButton: {
-    backgroundColor: '#f44336',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  logoutButtonText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: 'white',
   },
 });
 
