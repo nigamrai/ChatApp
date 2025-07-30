@@ -39,7 +39,7 @@ mongoose.connect(mongoURI, {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
-app.use('/video', videoRoutes);
+
 
 // Create HTTP server and integrate socket.io
 const server = http.createServer(app);

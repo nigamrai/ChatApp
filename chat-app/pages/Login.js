@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
-import {BACKEND_URL} from "@env";
+import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import axiosInstance from '../helpers/axiosInstance.js';
@@ -12,10 +11,27 @@ export default function Login({ navigation }) {
   const dispatch=useDispatch();
   // Function to handle the login action
   const handleLogin = async () => {
-    if (email === '' || password === '') {
-      Alert.alert('Error', 'Please fill in both fields.');
+    // Email validation
+    if (!email.trim()) {
+      Alert.alert('Validation Error', 'Email is required.');
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    // Password validation
+    if (!password) {
+      Alert.alert('Validation Error', 'Password is required.');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Validation Error', 'Password must be at least 6 characters long.');
+      return;
+    }
+
     console.log("Axios Instance",axiosInstance);
     try {
       const response = await axiosInstance.post('/auth/login', {
@@ -28,10 +44,9 @@ export default function Login({ navigation }) {
       dispatch(setUser({ user: response.data.user }));
       Alert.alert('Login Successful', `Welcome ${email}!`);
       navigation.navigate('Chat'); // Navigate to Chat screen
-    
     } catch (error) {
       console.log(error);
-      const errorMessage = error.response ? error.response.data.error : 'An error occurred. Please try again.';
+      const errorMessage = error.response ? (error.response.data.error || error.response.data.message) : 'An error occurred. Please try again.';
       Alert.alert('Error', errorMessage);
     }
   };

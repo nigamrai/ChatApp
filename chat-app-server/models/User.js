@@ -9,6 +9,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    lowercase: true,
+    trim: true,
   },
   password: {
     type: String,
@@ -42,6 +44,14 @@ const userSchema = new mongoose.Schema({
       
     },
   ],
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  otp:{
+    type: Number,
+
+  }
 });
 
 module.exports = mongoose.model('User', userSchema);

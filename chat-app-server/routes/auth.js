@@ -5,17 +5,36 @@ const upload=require('../uploads/upload');
 const router = express.Router();
 const jwt = require('jsonwebtoken'); // Import JWT
 const cloudinary = require('cloudinary').v2;
+const nodemailer = require('nodemailer');
 // Existing login route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
+  // Validation
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required.' });
+  }
+  // Simple email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Please enter a valid email address.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+  }
+
   try {
     const user = await User.findOne({ email });
     if (!user || user.password !== password) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    if (!user.isVerified) {
+      return res.status(403).json({ message: 'Please verify your email first. Check your email for the verification code.' });
+    }
+
     // Generate JWT
-    const token = jwt.sign({ id: user._id }, 'my_token_secret', { expiresIn: '1h' }); // Replace 'your_jwt_secret' with your actual secret
+    const token = jwt.sign({ id: user._id }, 'my_token_secret', { expiresIn: '1h' });
     res.status(200).json({ token, user });
   } catch (error) {
     console.error('Error during login:', error);
@@ -24,11 +43,24 @@ router.post('/login', async (req, res) => {
 });
 
 // Signup route
+// Signup route
 router.post('/signup', upload.single('image'), async (req, res) => {
   const { name, email, password } = req.body;
 
+  // Validation
   if (!name || !email || !password) {
-    return res.status(400).json({ message: 'Please fill in all fields and upload an image.' });
+    return res.status(400).json({ message: 'Name, email, and password are required.' });
+  }
+  // Simple email regex
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ message: 'Please enter a valid email address.' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+  }
+  if (!req.file) {
+    return res.status(400).json({ message: 'Profile image is required.' });
   }
 
   try {
@@ -38,18 +70,29 @@ router.post('/signup', upload.single('image'), async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    // Hash password
-    // const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'nigamrai2020@gmail.com',
+        pass: 'imby efdr egkw lwgi'
+      }
+    });
 
     const user = new User({
       name,
       email,
       password,
+      otp,
       image: {
         public_id: '',
         secure_url: '',
       },
     });
+
     if (req.file) {
       try {
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -62,8 +105,6 @@ router.post('/signup', upload.single('image'), async (req, res) => {
         if (result) {
           user.image.public_id = result.public_id;
           user.image.secure_url = result.secure_url;
-          // Remove file from server
-        //  await fs.unlink(req.file.path)
         }
       } catch (e) {
         return res.status(500).json({ error: e.message });
@@ -72,13 +113,54 @@ router.post('/signup', upload.single('image'), async (req, res) => {
 
     await user.save();
     user.password = undefined;
-
-    res.status(201).json({ message: 'User created successfully' });
+    
+    // Send OTP via email
+    try {
+      await transporter.sendMail({
+        from: 'nigamrai2020@gmail.com',
+        to: email,
+        subject: 'Verify your Nep Chat account',
+        html: `
+          <h1>Welcome to Nep Chat!</h1>
+          <p>Your verification code is: <strong>${otp}</strong></p>
+          <p>Please enter this code to verify your account.</p>
+        `
+      });
+      res.status(201).json({ message: 'User created successfully. Please check your email for verification code.' });
+    } catch (emailError) {
+      res.status(201).json({ message: 'User created successfully but failed to send verification email. Please contact support.' });
+    }
   } catch (error) {
     return res.status(500).json({ error: 'Error creating user' });
   }
 });
+// Verify OTP route
+router.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+  
+  if (!email || !otp) {
+    return res.status(400).json({ message: 'Email and OTP are required.' });
+  }
 
+  try {
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    if (user.otp !== Number(otp)) {
+      return res.status(400).json({ message: 'Invalid OTP.' });
+    }
+
+    user.isVerified = true;
+    user.otp = undefined; // Remove OTP after verification
+    await user.save();
+    res.status(200).json({ message: 'Email verified successfully. You can now login.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error verifying OTP.' });
+  }
+});
 router.get('/users', isLoggedIn, async (req, res) => {
   try {
     const users = await User.find(); // Assuming you have a User model
@@ -178,7 +260,7 @@ router.delete("/friend-request/reject", isLoggedIn, async (req, res) => {
   }
 });
 
-module.exports = router;
+
 
 
 

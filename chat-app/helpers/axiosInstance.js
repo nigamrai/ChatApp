@@ -1,9 +1,9 @@
+import { BACKEND_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {BACKEND_URL} from '@env';
 // Replace <your-computer-ip> with your actual IP address
 const BASE_URL = BACKEND_URL;
-console.log("BASE URL 2",BASE_URL)
+console.log("BASE URL 3",BASE_URL)
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,

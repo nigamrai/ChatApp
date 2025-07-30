@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons'; // Import Ionicons
 import * as ImagePicker from 'expo-image-picker'; // Using Expo's ImagePicker
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Alert, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import axiosInstance from '../helpers/axiosInstance.js';
 
@@ -36,15 +36,53 @@ export default function SignUp({ navigation }) {
   // Handle Sign-Up
   const handleSignUp = async () => {
     console.log("SignUp values:", { name, email, password, confirmPassword });
-    
-    if (!name.trim() || !email.trim() || !password || !confirmPassword || !image) {
 
-      Alert.alert('Error', 'Please fill in all fields and select an image.');
+    // Name validation
+    if (!name.trim()) {
+      Alert.alert('Validation Error', 'Name is required.');
       return;
     }
 
+    // Email validation
+    if (!email.trim()) {
+      Alert.alert('Validation Error', 'Email is required.');
+      return;
+    }
+    // Simple email regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    // Password validation
+    if (!password) {
+      Alert.alert('Validation Error', 'Password is required.');
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert('Validation Error', 'Password must be at least 6 characters long.');
+      return;
+    }
+
+    // Confirm password validation
+    if (!confirmPassword) {
+      Alert.alert('Validation Error', 'Please confirm your password.');
+      return;
+    }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      Alert.alert('Validation Error', 'Passwords do not match.');
+      return;
+    }
+
+    // Image validation
+    if (!image) {
+      Alert.alert('Validation Error', 'Please select a profile image.');
+      return;
+    }
+    // Optionally check image type
+    if (image.type && image.type !== 'image') {
+      Alert.alert('Validation Error', 'Selected file is not an image.');
       return;
     }
 
@@ -63,12 +101,13 @@ export default function SignUp({ navigation }) {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      Alert.alert('Sign Up Successful', `Welcome, ${name.trim()}!`);
-      navigation.goBack();
+      if (response.status === 201) {
+        Alert.alert('Sign Up Successful', 'Please check your email for the OTP to verify your account.');
+        navigation.navigate('VerifyOtpPage', { email: email.trim() });
+      }
     } catch (error) {
       console.error('Sign Up Failed:', error);
       Alert.alert('Sign Up Failed', error.response?.data?.error || error.message);
-
     }
   };
 

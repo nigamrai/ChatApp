@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36" version="27.0.9">
+  <diagram name="Page-1" id="-vHtsDId1cKQRoPLFYs-">
+    <mxGraphModel dx="1042" dy="574" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-1" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="160" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-2" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
+          <mxGeometry x="230" y="70" width="200" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-3" value="Send Friend Request" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="5hxG-n1L5E5yKMKyG4Bx-2">
+          <mxGeometry x="40" y="10" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-4" value="Accept Friend Request" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="5hxG-n1L5E5yKMKyG4Bx-2">
+          <mxGeometry x="40" y="70" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-5" value="Chat with friends" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="5hxG-n1L5E5yKMKyG4Bx-2">
+          <mxGeometry x="40" y="130" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-6" value="Set Scheduled Message" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="5hxG-n1L5E5yKMKyG4Bx-2">
+          <mxGeometry x="40" y="200" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-10" value="" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" target="5hxG-n1L5E5yKMKyG4Bx-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="180" as="sourcePoint" />
+            <mxPoint x="180" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-11" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" target="5hxG-n1L5E5yKMKyG4Bx-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="190" as="sourcePoint" />
+            <mxPoint x="180" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-12" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.007;entryY=0.332;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="5hxG-n1L5E5yKMKyG4Bx-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="200" as="sourcePoint" />
+            <mxPoint x="180" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="5hxG-n1L5E5yKMKyG4Bx-13" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.033;entryY=0.324;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="5hxG-n1L5E5yKMKyG4Bx-6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="200" as="sourcePoint" />
+            <mxPoint x="180" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
